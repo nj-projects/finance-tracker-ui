@@ -1,40 +1,25 @@
-const Dashboard = () => {
-    const expenses = [
-        {
-            id: 1,
-            name: 'Water Bill',
-            amount: 200.00,
-            date: new Date().toDateString()
-        },
-        {
-            id: 2,
-            name: 'Guitar',
-            amount: 900.00,
-            date: new Date().toDateString()
-        }
-    ]
-    return (
-        <div>
-            <table border={1}>
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                </tr>
-                </thead>
-                <tbody>
-                {expenses.map(expense =>
-                    <tr key={expense.id}>
-                        <td>{expense.name}</td>
-                        <td>{expense.amount}</td>
-                        <td>{expense.date}</td>
-                    </tr>
-                )}
-                </tbody>
+import ExpenseList from "../../expense/components/ExpenseList.tsx";
+import {Expense} from "../../expense/model/Expense.ts";
+import {useEffect, useState} from "react";
+import apiClient from "../../config/api-client.ts";
 
-            </table>
-        </div>
+const Dashboard = () => {
+    const [expenses, setExpenses] = useState<Expense[]>([]);
+    const [errors, setErrors] = useState(null);
+    const [isLoading, setLoader] = useState(false);
+    useEffect(() => {
+        apiClient
+            .get('/expenses')
+            .then(res => setExpenses(res.data))
+            .catch(err => setErrors(err))
+            .finally(() => setLoader(false))
+    }, []);
+
+    return (
+        <>
+            <ExpenseList expenses={expenses}/>
+        </>
+
     );
 };
 
